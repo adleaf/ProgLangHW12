@@ -43,8 +43,8 @@ public class MultithreadedServerTests extends TestCase {
 			accounts[i] = new Account(Z-i);
 		}			 
 		
-		MultithreadedServer.runServer("src/hw09/data/increment", accounts);
-	
+		MultithreadedServer.runServer("src/hw12/data/increment", accounts);
+			
 		// assert correct account values
 		for (int i = A; i <= Z; i++) {
 			Character c = new Character((char) (i+'A'));
@@ -52,6 +52,46 @@ public class MultithreadedServerTests extends TestCase {
 		}		
 
 	 }
+     
+     @Test
+     public void testStar() throws IOException {
+    	// initialize accounts 
+ 		accounts = new Account[numLetters];
+ 		for (int i = A; i <= Z; i++) {
+ 			accounts[i] = new Account(Z-i);
+ 		}
+ 		
+ 		MultithreadedServer.runServer("src/hw12/data/starTest", accounts);
+ 		
+ 		/*
+ 		for (int i = A; i <= Z; i++) {
+			Character c = new Character((char) (i+'A'));
+			System.out.println(i + ": " + accounts[i].getValue());
+			//assertEquals("Account "+c+" differs",Z-i+1,accounts[i].getValue());
+		}
+		*/
+		
+ 		assertEquals("Account C differs",24,accounts[2].getValue());
+ 		assertEquals("Account A differs",1,accounts[0].getValue());
+ 		     }
+     
+     @Test
+     public void testChange() throws IOException {
+    	 //This test also tests to avoid deadlock in concurrent version
+    	 
+    	// initialize accounts 
+ 		accounts = new Account[numLetters];
+ 		for (int i = A; i <= Z; i++) {
+ 			accounts[i] = new Account(Z-i);
+ 		}
+ 		
+ 		MultithreadedServer.runServer("src/hw12/data/testChanges", accounts);
+		
+ 		assertEquals("Account A differs",26,accounts[0].getValue());
+ 		assertEquals("Account B differs",27,accounts[1].getValue());
+ 		assertEquals("Account C differs",53,accounts[2].getValue());
+ 		
+     }
 	 	  	 
 	
 }
