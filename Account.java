@@ -17,7 +17,7 @@ public class Account {
     private int value = 0;
     private Thread writer = null;
     private HashSet<Thread> readers;
-
+ 
     public Account(int initialValue) {
         value = initialValue;
         readers = new HashSet<Thread>();

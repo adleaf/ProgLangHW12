@@ -3,12 +3,17 @@ package hw12;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 // TO DO: Task is currently an ordinary class.
 // You will need to modify it to make it a task,
 // so it can be given to an Executor thread pool.
 //
-class Task {
+class Task implements Runnable{
     private static final int A = constants.A;
     private static final int Z = constants.Z;
     private static final int numLetters = constants.numLetters;
@@ -63,6 +68,11 @@ class Task {
         String[] commands = transaction.split(";");
 
         for (int i = 0; i < commands.length; i++) {
+        	System.out.print(commands[i] + " ");
+        }
+        System.out.println("hi");
+        
+        for (int i = 0; i < commands.length; i++) {
             String[] words = commands[i].trim().split("\\s");
             if (words.length < 3)
                 throw new InvalidTransactionError();
@@ -91,7 +101,7 @@ class Task {
 }
 
 public class MultithreadedServer {
-
+	
 	// requires: accounts != null && accounts[i] != null (i.e., accounts are properly initialized)
 	// modifies: accounts
 	// effects: accounts change according to transactions in inputFile
@@ -106,12 +116,15 @@ public class MultithreadedServer {
         // TO DO: you will need to create an Executor and then modify the
         // following loop to feed tasks to the executor instead of running them
         // directly.  
-
+        
+        ExecutorService executor = Executors.newFixedThreadPool(3); 
+        
         while ((line = input.readLine()) != null) {
             Task t = new Task(accounts, line);
-            t.run();
+            executor.execute(t);
         }
         
+        executor.shutdown();
         input.close();
 
     }

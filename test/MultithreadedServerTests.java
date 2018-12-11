@@ -52,7 +52,8 @@ public class MultithreadedServerTests extends TestCase {
 		}		
 
 	 }
-     
+ 
+/*     
      @Test
      public void testStar() throws IOException {
     	// initialize accounts 
@@ -63,18 +64,19 @@ public class MultithreadedServerTests extends TestCase {
  		
  		MultithreadedServer.runServer("src/hw12/data/starTest", accounts);
  		
- 		/*
- 		for (int i = A; i <= Z; i++) {
-			Character c = new Character((char) (i+'A'));
-			System.out.println(i + ": " + accounts[i].getValue());
-			//assertEquals("Account "+c+" differs",Z-i+1,accounts[i].getValue());
-		}
-		*/
+ 		
+ 		//for (int i = A; i <= Z; i++) {
+		//	Character c = new Character((char) (i+'A'));
+		//	System.out.println(i + ": " + accounts[i].getValue());
+		//	//assertEquals("Account "+c+" differs",Z-i+1,accounts[i].getValue());
+		//}
+		
 		
  		assertEquals("Account C differs",24,accounts[2].getValue());
  		assertEquals("Account A differs",1,accounts[0].getValue());
  		     }
-     
+*/
+/*     
      @Test
      public void testChange() throws IOException {
     	 //This test also tests to avoid deadlock in concurrent version
@@ -93,5 +95,5 @@ public class MultithreadedServerTests extends TestCase {
  		
      }
 	 	  	 
-	
+*/
 }
