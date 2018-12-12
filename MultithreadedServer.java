@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 class Cache {
 	Account account; //reference to the Account object it caches
@@ -139,8 +140,14 @@ public class MultithreadedServer {
             Task t = new Task(accounts, line);
             executor.execute(t);
         }
+        try {
+        	executor.shutdown();
+        	executor.awaitTermination(20, TimeUnit.MINUTES);
+        }
+        catch(InterruptedException ex) {
+        	ex.getCause().printStackTrace();
+        }
         
-        executor.shutdown();
         input.close();
 
     }
