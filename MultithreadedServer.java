@@ -143,7 +143,7 @@ class Task implements Runnable{
         for (int i = 0; i < caches.length && failure == false; i +=1) { //opens all accounts
         	if (caches[i].read || caches[i].written) {
         		try {
-        			caches[i].account.open(true);
+        			caches[i].account.open(false); //opens for reading
         		} catch (TransactionAbortException e) {
         			for (int j = i; j >= 0; j -= 1) {  //once we hit a already opened account, it closes all 
         											   //previously opened accounts
@@ -169,11 +169,26 @@ class Task implements Runnable{
         					caches[j].account.close(); 
         			}      			
         			failure = true; //a flag for the for loop, so it wont keep opening after failure
-        			run(); //retry        			
+        			run(); //retry not sure if correct      			
         		}
         	}
         }
-        System.out.println("commit: " + transaction);
+        
+        //We now have verified all variables. Let us update all
+        for (int i = 0; i < caches.length && failure == false; i +=1) {
+        	if (caches[i].read || caches[i].written) {
+        		int finalValue = caches[i].currentValue;
+        		caches[i].account.update(finalValue);
+        		System.out.println("commit: " + transaction);
+        	}
+        }
+        //We now can close all.
+        for (int i = 0; i < caches.length && failure == false; i +=1) {
+        	if (caches[i].read || caches[i].written) {
+        		caches[i].account.close();
+        	}
+        }
+        
     }
 }
 
