@@ -27,7 +27,7 @@ class Task implements Runnable{
     private static final int Z = constants.Z;
     private static final int numLetters = constants.numLetters;
 
-    private Account[] accounts;
+    private Cache[] caches;
     private String transaction;
 
     // TO DO: The sequential version of Task peeks at accounts
@@ -39,8 +39,8 @@ class Task implements Runnable{
     // writing, or both, (2) verify all previously peeked-at values,
     // (3) perform all updates, and (4) close all opened accounts.
 
-    public Task(Account[] allAccounts, String trans) {
-        accounts = allAccounts;
+    public Task(Cache[] allCaches, String trans) {
+        caches = allCaches;
         transaction = trans;
     }
     
@@ -53,12 +53,12 @@ class Task implements Runnable{
         int accountNum = (int) (name.charAt(0)) - (int) 'A';
         if (accountNum < A || accountNum > Z)
             throw new InvalidTransactionError();
-        Account a = accounts[accountNum];
+        Account a = caches[accountNum].account;
         for (int i = 1; i < name.length(); i++) {
             if (name.charAt(i) != '*')
                 throw new InvalidTransactionError();
-            accountNum = (accounts[accountNum].peek() % numLetters);
-            a = accounts[accountNum];
+            accountNum = (caches[accountNum].account.peek() % numLetters);
+            a = caches[accountNum].account;
         }
         Cache c = new Cache();
         c.account = a;
