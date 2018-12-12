@@ -140,10 +140,16 @@ class Task implements Runnable{
             lhs.account.close();//lhs.close();
         }
         boolean failure = false;
+        
         for (int i = 0; i < caches.length && failure == false; i +=1) { //opens all accounts
         	if (caches[i].read || caches[i].written) {
         		try {
-        			caches[i].account.open(false); //opens for reading
+        			if (caches[i].read) { //opens for reading
+        				caches[i].account.open(false);
+        			}
+        			else {
+        				caches[i].account.open(false); //opens for writing
+        			}
         		} catch (TransactionAbortException e) {
         			for (int j = i; j >= 0; j -= 1) {  //once we hit a already opened account, it closes all 
         											   //previously opened accounts
@@ -209,7 +215,7 @@ public class MultithreadedServer {
         // following loop to feed tasks to the executor instead of running them
         // directly.  
         
-        ExecutorService executor = Executors.newFixedThreadPool(10); 
+        ExecutorService executor = Executors.newFixedThreadPool(2); 
         
         while ((line = input.readLine()) != null) {
             Task t = new Task(accounts, line);
