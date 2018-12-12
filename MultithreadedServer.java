@@ -47,7 +47,7 @@ class Task implements Runnable{
     		Cache c = new Cache();
     		c.account = allAccounts[i];
     		c.initialValue = allAccounts[i].peek();
-    		c.currentValue = allAccounts[i].peek();
+    		c.currentValue = c.initialValue;
     		caches[i] = c;
     	}
     	
