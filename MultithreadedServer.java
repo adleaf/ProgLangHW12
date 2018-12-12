@@ -82,18 +82,17 @@ class Task implements Runnable{
             accountNum = (accounts[accountNum].peek() % numLetters);
             a = accounts[accountNum];
         }
-        Cache c = new Cache();
-        c.account = a;
-		c.initialValue = accounts[accountNum].peek();
-		c.currentValue = c.initialValue;
-		caches[accountNum] = c;
-		c.accountNum = accountNum;
+        caches[accountNum].account = a;
+        caches[accountNum].initialValue = accounts[accountNum].peek();
+        caches[accountNum].currentValue = caches[accountNum].initialValue;
+        caches[accountNum].accountNum = accountNum;
         if (side == 0) {
-        	c.written = true;
+        	caches[accountNum].written = true;
         }else {
-        	c.read = true;
-        }
-        return c;
+        	caches[accountNum].read = true;
+        }        
+        
+        return caches[accountNum];
     }
 
     private int parseAccountOrNum(String name) {
@@ -184,7 +183,7 @@ class Task implements Runnable{
         for (int i = 0; i < caches.length && failure == false; i +=1) {
         	if (caches[i].written) {
         		int finalValue = caches[i].currentValue;
-        		System.out.println();
+        		System.out.println(finalValue);
         		caches[i].account.update(finalValue);
         		System.out.println("commit: " + transaction);
         	}
