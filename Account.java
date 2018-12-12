@@ -41,7 +41,7 @@ public class Account {
             }
             return value;
         }
-    }
+    }  
 
     // TO DO: the sequential version does not call this method,
     // but the parallel version will need to.

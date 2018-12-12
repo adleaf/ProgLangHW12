@@ -16,6 +16,7 @@ class Cache {
 	int currentValue; //value resulting from processing transaction
 	boolean read = false; //was this account read from in cache?
 	boolean written = false; //was this account written to the cache?
+	int accountNum;
 }
 
 // TO DO: Task is currently an ordinary class.
@@ -29,7 +30,7 @@ class Task implements Runnable{
 
     private Cache[] caches;
     private String transaction;
-
+    private Account[] accounts; 
     // TO DO: The sequential version of Task peeks at accounts
     // whenever it needs to get a value, and opens, updates, and closes
     // an account whenever it needs to set a value.  This won't work in
@@ -40,18 +41,23 @@ class Task implements Runnable{
     // (3) perform all updates, and (4) close all opened accounts.
 
     public Task(Account[] allAccounts, String trans) {
-    	
     	caches = new Cache[allAccounts.length];
-    	
-    	for (int i=0; i<allAccounts.length; i++) {
-    		Cache c = new Cache();
-    		c.account = allAccounts[i];
-    		c.initialValue = allAccounts[i].peek();
-    		c.currentValue = allAccounts[i].peek();
-    		caches[i] = c;
-    	}
-    	
+    	accounts = allAccounts;    	
         transaction = trans;
+    }
+    
+    private Account parseAccount(String name) {
+        int accountNum = (int) (name.charAt(0)) - (int) 'A';
+        if (accountNum < A || accountNum > Z)
+            throw new InvalidTransactionError();
+        Account a = accounts[accountNum];
+        for (int i = 1; i < name.length(); i++) {
+            if (name.charAt(i) != '*')
+                throw new InvalidTransactionError();
+            accountNum = (accounts[accountNum].peek() % numLetters);
+            a = accounts[accountNum];
+        }
+        return a;
     }
     
     // TO DO: parseAccount currently returns a reference to an account.
@@ -63,15 +69,19 @@ class Task implements Runnable{
         int accountNum = (int) (name.charAt(0)) - (int) 'A';
         if (accountNum < A || accountNum > Z)
             throw new InvalidTransactionError();
-        Account a = caches[accountNum].account;
+        Account a = accounts[accountNum];
         for (int i = 1; i < name.length(); i++) {
             if (name.charAt(i) != '*')
                 throw new InvalidTransactionError();
-            accountNum = (caches[accountNum].account.peek() % numLetters);
-            a = caches[accountNum].account;
+            accountNum = (accounts[accountNum].peek() % numLetters);
+            a = accounts[accountNum];
         }
         Cache c = new Cache();
         c.account = a;
+		c.initialValue = accounts[accountNum].peek();
+		c.currentValue = c.initialValue;
+		caches[accountNum] = c;
+		c.accountNum = accountNum;
         if (side == 0) {
         	c.written = true;
         }else {
@@ -97,7 +107,7 @@ class Task implements Runnable{
         for (int i = 0; i < commands.length; i++) {
         	System.out.print(commands[i] + " ");
         }
-        System.out.println("hi");
+        //System.out.println("hi");
         
         for (int i = 0; i < commands.length; i++) {
             String[] words = commands[i].trim().split("\\s");
@@ -144,7 +154,7 @@ public class MultithreadedServer {
         // following loop to feed tasks to the executor instead of running them
         // directly.  
         
-        ExecutorService executor = Executors.newFixedThreadPool(3); 
+        ExecutorService executor = Executors.newFixedThreadPool(10); 
         
         while ((line = input.readLine()) != null) {
             Task t = new Task(accounts, line);
