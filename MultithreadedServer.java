@@ -136,11 +136,11 @@ class Task implements Runnable{
         for (int i = 0; i < caches.length && failure == false; i +=1) { //opens all accounts
         	if (caches[i].read || caches[i].written) {
         		try {
-        			if (caches[i].read) { //opens for reading
+        			if (caches[i].read) { //This line is for andrew
         				caches[i].account.open(false);
         			}
-        			else {
-        				caches[i].account.open(false); //opens for writing
+        			if (caches[i].written) {
+        				caches[i].account.open(true); //opens for writing
         			}
         		} catch (TransactionAbortException e) {
         			for (int j = i; j >= 0; j -= 1) {  //once we hit a already opened account, it closes all 
