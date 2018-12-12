@@ -39,8 +39,18 @@ class Task implements Runnable{
     // writing, or both, (2) verify all previously peeked-at values,
     // (3) perform all updates, and (4) close all opened accounts.
 
-    public Task(Cache[] allCaches, String trans) {
-        caches = allCaches;
+    public Task(Account[] allAccounts, String trans) {
+    	
+    	caches = new Cache[allAccounts.length];
+    	
+    	for (int i=0; i<allAccounts.length; i++) {
+    		Cache c = new Cache();
+    		c.account = allAccounts[i];
+    		c.initialValue = allAccounts[i].peek();
+    		c.currentValue = allAccounts[i].peek();
+    		caches[i] = c;
+    	}
+    	
         transaction = trans;
     }
     
