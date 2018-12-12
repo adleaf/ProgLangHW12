@@ -13,8 +13,8 @@ class Cache {
 	Account account; //reference to the Account object it caches
 	int initialValue; //initial value read when account peaked
 	int currentValue; //value resulting from processing transaction
-	boolean read; //was this account read from in cache?
-	boolean written; //was this account written to the cache?
+	boolean read = false; //was this account read from in cache?
+	boolean written = false; //was this account written to the cache?
 }
 
 // TO DO: Task is currently an ordinary class.
@@ -46,8 +46,9 @@ class Task implements Runnable{
     // TO DO: parseAccount currently returns a reference to an account.
     // You probably want to change it to return a reference to an
     // account *cache* instead.
+    //side will be 0 if it's on the left hand side (write) or 1 if it's on the right hand side (read)
     //
-    private Account parseAccount(String name) {
+    private Cache parseAccount(String name, int side) {
         int accountNum = (int) (name.charAt(0)) - (int) 'A';
         if (accountNum < A || accountNum > Z)
             throw new InvalidTransactionError();
@@ -58,7 +59,14 @@ class Task implements Runnable{
             accountNum = (accounts[accountNum].peek() % numLetters);
             a = accounts[accountNum];
         }
-        return a;
+        Cache c = new Cache();
+        c.account = a;
+        if (side == 0) {
+        	c.written = true;
+        }else {
+        	c.read = true;
+        }
+        return c;
     }
 
     private int parseAccountOrNum(String name) {
@@ -66,7 +74,7 @@ class Task implements Runnable{
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9') {
             rtn = new Integer(name).intValue();
         } else {
-            rtn = parseAccount(name).peek();
+            rtn = parseAccount(name, 1).currentValue;//parseAccount(name).peek();
         }
         return rtn;
     }
@@ -84,7 +92,7 @@ class Task implements Runnable{
             String[] words = commands[i].trim().split("\\s");
             if (words.length < 3)
                 throw new InvalidTransactionError();
-            Account lhs = parseAccount(words[0]);
+            Cache lhs = parseAccount(words[0], 0);//parseAccount(words[0]);
             if (!words[1].equals("="))
                 throw new InvalidTransactionError();
             int rhs = parseAccountOrNum(words[2]);
@@ -97,12 +105,12 @@ class Task implements Runnable{
                     throw new InvalidTransactionError();
             }
             try {
-                lhs.open(true);
+                lhs.account.open(true);//lhs.open(true);
             } catch (TransactionAbortException e) {
                 // won't happen in sequential version
             }
-            lhs.update(rhs);
-            lhs.close();
+            lhs.account.update(rhs);//lhs.update(rhs);
+            lhs.account.close();//lhs.close();
         }
         System.out.println("commit: " + transaction);
     }
