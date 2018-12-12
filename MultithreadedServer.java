@@ -67,7 +67,7 @@ class Task implements Runnable{
         for (int i = 1; i < name.length(); i++) {
             if (name.charAt(i) != '*')
                 throw new InvalidTransactionError();
-            accountNum = (caches[accountNum].account.peek() % numLetters);
+            accountNum = (caches[accountNum].initialValue % numLetters);
             a = caches[accountNum].account;
         }
         Cache c = new Cache();
