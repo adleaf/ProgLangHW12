@@ -9,6 +9,14 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+class Cache {
+	Account account; //reference to the Account object it caches
+	int initialValue; //initial value read when account peaked
+	int currentValue; //value resulting from processing transaction
+	boolean read; //was this account read from in cache?
+	boolean written; //was this account written to the cache?
+}
+
 // TO DO: Task is currently an ordinary class.
 // You will need to modify it to make it a task,
 // so it can be given to an Executor thread pool.
