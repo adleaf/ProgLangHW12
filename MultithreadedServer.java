@@ -182,8 +182,9 @@ class Task implements Runnable{
         
         //We now have verified all variables. Let us update all
         for (int i = 0; i < caches.length && failure == false; i +=1) {
-        	if (caches[i].read || caches[i].written) {
+        	if (caches[i].written) {
         		int finalValue = caches[i].currentValue;
+        		System.out.println();
         		caches[i].account.update(finalValue);
         		System.out.println("commit: " + transaction);
         	}
