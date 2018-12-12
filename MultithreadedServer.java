@@ -131,16 +131,9 @@ class Task implements Runnable{
                     throw new InvalidTransactionError();
             }
             lhs.currentValue = rhs;
-            try {
-                lhs.account.open(true);//lhs.open(true);
-            } catch (TransactionAbortException e) {
-                // won't happen in sequential version
-            }
-            lhs.account.update(lhs.currentValue);//lhs.update(rhs);
-            lhs.account.close();//lhs.close();
         }
-        boolean failure = false;
         
+        boolean failure = false;
         for (int i = 0; i < caches.length && failure == false; i +=1) { //opens all accounts
         	if (caches[i].read || caches[i].written) {
         		try {
@@ -157,6 +150,7 @@ class Task implements Runnable{
         					caches[j].account.close(); 
         			}      			
         			failure = true; //a flag for the for loop, so it wont keep opening after failure
+        			System.out.println("FAILURE IN OPENING");
         			run(); //not sure if this is correct
         		}
         	}
@@ -165,7 +159,12 @@ class Task implements Runnable{
         for (int i = 0; i < caches.length && failure == false; i +=1) {
         	if (caches[i].read || caches[i].written) {
         		try {
+        		
         			int expected = caches[i].initialValue;
+        			
+        			//String overall= Integer.toString(expected)+ " vs " + Integer.toString(caches[i].account.peek());
+        			//System.out.println(overall);
+        			
         			caches[i].account.verify(expected);
         		}
         		catch (TransactionAbortException e) { //something has been modified. We need to close all accounts and 
@@ -173,7 +172,8 @@ class Task implements Runnable{
         			for (int j = i; j >= 0; j -= 1) {  //close all accounts we opened.
         				if (caches[j].read || caches[j].written)
         					caches[j].account.close(); 
-        			}      			
+        			}
+        			System.out.println("FAILURE IN VERIFING");
         			failure = true; //a flag for the for loop, so it wont keep opening after failure
         			run(); //retry not sure if correct      			
         		}
@@ -215,7 +215,7 @@ public class MultithreadedServer {
         // following loop to feed tasks to the executor instead of running them
         // directly.  
         
-        ExecutorService executor = Executors.newFixedThreadPool(2); 
+        ExecutorService executor = Executors.newFixedThreadPool(7); 
         
         while ((line = input.readLine()) != null) {
             Task t = new Task(accounts, line);

@@ -53,7 +53,7 @@ public class MultithreadedServerTests extends TestCase {
 
 	 }  
  
-     
+/*     
      @Test
      public void testStar() throws IOException {
     	// initialize accounts 
@@ -67,6 +67,7 @@ public class MultithreadedServerTests extends TestCase {
  		assertEquals("Account C differs",24,accounts[2].getValue());
  		assertEquals("Account A differs",1,accounts[0].getValue());
  		     }
+*/
 
 /*     
      @Test
