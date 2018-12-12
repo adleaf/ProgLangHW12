@@ -42,6 +42,12 @@ class Task implements Runnable{
 
     public Task(Account[] allAccounts, String trans) {
     	caches = new Cache[allAccounts.length];
+    	
+    	for (int i = 0; i < allAccounts.length; i += 1)
+    	{
+    		caches[i] = new Cache();
+    		
+    	}
     	accounts = allAccounts;    	
         transaction = trans;
     }
@@ -108,7 +114,6 @@ class Task implements Runnable{
         	System.out.print(commands[i] + " ");
         }
         //System.out.println("hi");
-        
         for (int i = 0; i < commands.length; i++) {
             String[] words = commands[i].trim().split("\\s");
             if (words.length < 3)
@@ -125,13 +130,48 @@ class Task implements Runnable{
                 else
                     throw new InvalidTransactionError();
             }
+            lhs.currentValue = rhs;
             try {
                 lhs.account.open(true);//lhs.open(true);
             } catch (TransactionAbortException e) {
                 // won't happen in sequential version
             }
-            lhs.account.update(rhs);//lhs.update(rhs);
+            lhs.account.update(lhs.currentValue);//lhs.update(rhs);
             lhs.account.close();//lhs.close();
+        }
+        boolean failure = false;
+        for (int i = 0; i < caches.length && failure == false; i +=1) { //opens all accounts
+        	if (caches[i].read || caches[i].written) {
+        		try {
+        			caches[i].account.open(true);
+        		} catch (TransactionAbortException e) {
+        			for (int j = i; j >= 0; j -= 1) {  //once we hit a already opened account, it closes all 
+        											   //previously opened accounts
+        				if (caches[j].read || caches[j].written)
+        					caches[j].account.close(); 
+        			}      			
+        			failure = true; //a flag for the for loop, so it wont keep opening after failure
+        			run(); //not sure if this is correct
+        		}
+        	}
+        }
+        //We now have all accounts, we need to verify that each account holds the expected value. 
+        for (int i = 0; i < caches.length && failure == false; i +=1) {
+        	if (caches[i].read || caches[i].written) {
+        		try {
+        			int expected = caches[i].initialValue;
+        			caches[i].account.verify(expected);
+        		}
+        		catch (TransactionAbortException e) { //something has been modified. We need to close all accounts and 
+        			                                  //retry again.
+        			for (int j = i; j >= 0; j -= 1) {  //close all accounts we opened.
+        				if (caches[j].read || caches[j].written)
+        					caches[j].account.close(); 
+        			}      			
+        			failure = true; //a flag for the for loop, so it wont keep opening after failure
+        			run(); //retry        			
+        		}
+        	}
         }
         System.out.println("commit: " + transaction);
     }

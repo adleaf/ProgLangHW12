@@ -51,9 +51,9 @@ public class MultithreadedServerTests extends TestCase {
 			assertEquals("Account "+c+" differs",Z-i+1,accounts[i].getValue());
 		}		
 
-	 }
+	 }  
  
-/*     
+     
      @Test
      public void testStar() throws IOException {
     	// initialize accounts 
@@ -62,20 +62,12 @@ public class MultithreadedServerTests extends TestCase {
  			accounts[i] = new Account(Z-i);
  		}
  		
- 		MultithreadedServer.runServer("src/hw12/data/starTest", accounts);
- 		
- 		
- 		//for (int i = A; i <= Z; i++) {
-		//	Character c = new Character((char) (i+'A'));
-		//	System.out.println(i + ": " + accounts[i].getValue());
-		//	//assertEquals("Account "+c+" differs",Z-i+1,accounts[i].getValue());
-		//}
-		
+ 		MultithreadedServer.runServer("src/hw12/data/starTest", accounts);		
 		
  		assertEquals("Account C differs",24,accounts[2].getValue());
  		assertEquals("Account A differs",1,accounts[0].getValue());
  		     }
-*/
+
 /*     
      @Test
      public void testChange() throws IOException {
