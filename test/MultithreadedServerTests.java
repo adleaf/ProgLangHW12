@@ -53,7 +53,7 @@ public class MultithreadedServerTests extends TestCase {
 
 	 }  
  
-*/    
+    
      @Test
      public void testStar() throws IOException {
     	// initialize accounts 
@@ -68,8 +68,8 @@ public class MultithreadedServerTests extends TestCase {
  		assertEquals("Account A differs",1,accounts[0].getValue());
  		     }
 
-
-/*     
+*/
+     
      @Test
      public void testChange() throws IOException {
     	 //This test also tests to avoid deadlock in concurrent version
@@ -87,7 +87,8 @@ public class MultithreadedServerTests extends TestCase {
  		assertEquals("Account C differs",53,accounts[2].getValue());
  		
      }
-     
+  
+ /*
      @Test
      public void testSubtract() throws IOException {    	 
     	// initialize accounts 
@@ -104,7 +105,8 @@ public class MultithreadedServerTests extends TestCase {
  		assertEquals("Account D differs",17,accounts[3].getValue());
  		
      }
-   
+     */
+ /*  
      @Test
      public void testRotate() throws IOException {
     	// initialize accounts 
