@@ -18,10 +18,6 @@ class Cache {
 	int accountNum;
 	boolean notSet;
 
-	public String toString() {
-		if(account==null) return "n/a";
-		return (char)(accountNum + 'A') + " i: " + initialValue + ", c: " + currentValue + " r:" + read + "/w:" + written;
-	}
 }
 
 // TO DO: Task is currently an ordinary class.
@@ -33,9 +29,15 @@ class Task implements Runnable {
 	private static final int Z = constants.Z;
 	private static final int numLetters = constants.numLetters;
 
+	//an array to hold all caches
 	private Cache[] caches;
+	
+	//string to hold the current transaction
 	private String transaction;
+	
+	//array to hold all the accounts
 	private Account[] accounts;
+	
 	// TO DO: The sequential version of Task peeks at accounts
 	// whenever it needs to get a value, and opens, updates, and closes
 	// an account whenever it needs to set a value. This won't work in
@@ -44,30 +46,24 @@ class Task implements Runnable {
 	// you want to do, (1) open all accounts you need, for reading,
 	// writing, or both, (2) verify all previously peeked-at values,
 	// (3) perform all updates, and (4) close all opened accounts.
-
+	
+	// requires: Valid account array and transaction string
+	// modifies: transaction, caches, accounts
+	// effects: creates a Task object and initializes accounts, caches, and transaction
 	public Task(Account[] allAccounts, String trans) {
+		//reset caches
 		caches = new Cache[allAccounts.length];
 
 		for (int i = 0; i < allAccounts.length; i += 1) {
 			caches[i] = new Cache();
 
 		}
+		
+		//reset all accounts
 		accounts = allAccounts;
+		
+		//set the transaction
 		transaction = trans;
-	}
-
-	private Account parseAccount(String name) {
-		int accountNum = (int) (name.charAt(0)) - (int) 'A';
-		if (accountNum < A || accountNum > Z)
-			throw new InvalidTransactionError();
-		Account a = accounts[accountNum];
-		for (int i = 1; i < name.length(); i++) {
-			if (name.charAt(i) != '*')
-				throw new InvalidTransactionError();
-			accountNum = (accounts[accountNum].peek() % numLetters);
-			a = accounts[accountNum];
-		}
-		return a;
 	}
 
 	// TO DO: parseAccount currently returns a reference to an account.
@@ -75,23 +71,39 @@ class Task implements Runnable {
 	// account cache instead.
 	// side will be 0 if it's on the left hand side (write) or 1 if it's on the
 	// right hand side (read)
-	//
+	
+	// requires: name != null, side is a valid int
+	// modifies: accounts, caches
+	// effects: accounts change according to their values and the value of side
 	private Cache parseAccount(String name, int side) {
+		//get the account number from the letter
 		int accountNum = (int) (name.charAt(0)) - (int) 'A';
+		
+		//make sure it's a valid account
 		if (accountNum < A || accountNum > Z)
 			throw new InvalidTransactionError();
+		
+		//get the account from the array
 		Account a = accounts[accountNum];
+		
+		//go through the stars (*) in the name
 		for (int i = 1; i < name.length(); i++) {
-			// System.out.println("HERE ");
+			//make sure it's valid
 			if (name.charAt(i) != '*')
 				throw new InvalidTransactionError();
 
+			//peek at the value of the account
 			int peekedVal = accounts[accountNum].peek();
+			
+			//if the current value isn't equal to the peeked value, update the peeked value
 			if (caches[accountNum].currentValue != peekedVal) {
 				peekedVal = caches[accountNum].currentValue;
 			}
 			
+			//get the account number from the value
 			accountNum = (peekedVal % numLetters);
+			
+			//if the caches doesn't exists, set it up with the current values
 			if (caches[accountNum].account == null) {
 				int val = accounts[accountNum].peek();
 				caches[accountNum].account = accounts[accountNum];
@@ -103,34 +115,45 @@ class Task implements Runnable {
 			a = accounts[accountNum];
 		}
 
-		// this could be resetting it
+		// set cache again just in case there were no stars
 		if(caches[accountNum].account == null) {
 			caches[accountNum].account = a;
-			System.out.println("Trying to Peek account:" + accountNum);
 			caches[accountNum].initialValue = accounts[accountNum].peek();
 			caches[accountNum].currentValue = caches[accountNum].initialValue;
 			caches[accountNum].notSet = true;
 			caches[accountNum].accountNum = accountNum;
 		}
+		
+		//if it's the left hand side, it's going to be written
 		if (side == 0) {
 			caches[accountNum].written = true;
+		//else it's on the right hand side and will be read
 		} else {
 			caches[accountNum].read = true;
 		}
 
+		//return the cache
 		return caches[accountNum];
 	}
 
+	// requires: name is a valid string
+	// modifies: accounts, caches
+	// effects: accounts and caches change according to the given value
 	private int parseAccountOrNum(String name) {
 		int rtn;
+		//if the char is a number, return its value
 		if (name.charAt(0) >= '0' && name.charAt(0) <= '9') {
 			rtn = new Integer(name).intValue();
+		//else return the value in the account
 		} else {
-			rtn = parseAccount(name, 1).currentValue;// parseAccount(name).peek();
+			rtn = parseAccount(name, 1).currentValue;
 		}
 		return rtn;
 	}
 
+	// requires: transaction != null
+	// modifies: accounts, caches
+	// effects: accounts and caches change according to transactions in inputFile
 	public void run() {
 		// tokenize transaction
 		String[] commands = transaction.split(";");
@@ -151,13 +174,11 @@ class Task implements Runnable {
 					throw new InvalidTransactionError();
 			}
 			lhs.currentValue = rhs;
-			System.out.println("rhs: " + rhs + "->" + lhs);
 		}
 		boolean failure = false;
 		for (int i = 0; i < caches.length && failure == false; i += 1) { // opens
 			if (caches[i].read || caches[i].written) {
 				try {
-					System.out.println("Opening account "+i);
 					if (caches[i].read) {
 						caches[i].account.open(false);
 					}
@@ -168,11 +189,9 @@ class Task implements Runnable {
 					for (int j = i - 1; j >= 0; j -= 1) { // once we hit a
 						if (caches[j].read || caches[j].written) {
 							caches[j].account.close();
-							System.out.println("Closing account "+j);
 						}
 					}
 					failure = true;
-					System.out.println("rip opening");
 				}
 			}
 		}
@@ -188,7 +207,6 @@ class Task implements Runnable {
 							caches[j].account.close();
 					}
 					failure = true; // a flag for the for loop, so it wont keep
-					System.out.println("rip verify");
 				}
 			}
 		}
@@ -208,17 +226,12 @@ class Task implements Runnable {
 			}
 		}
 		if (failure == true) { // if failure is true, reset the cache
-			System.out.println("failed");
 			for (int i = 0; i < caches.length; i += 1) {
 				caches[i] = new Cache();
 			}
 			
 			run();
 		}
-
-//		for (Cache c : caches)
-//			System.out.println(c);
-//
 	
 	}
 }
@@ -239,12 +252,15 @@ public class MultithreadedServer {
 		// following loop to feed tasks to the executor instead of running them
 		// directly.
 
+		//Executor to run the program with up to 10 threads
 		ExecutorService executor = Executors.newFixedThreadPool(10);
 
+		//go through each input line and execute the command
 		while ((line = input.readLine()) != null) {
 			Task t = new Task(accounts, line);
 			executor.execute(t);
 		}
+		//wait for all the threads to terminate
 		try {
 			executor.shutdown();
 			executor.awaitTermination(20, TimeUnit.MINUTES);
