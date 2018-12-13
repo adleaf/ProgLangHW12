@@ -157,6 +157,7 @@ class Task implements Runnable {
 		for (int i = 0; i < caches.length && failure == false; i += 1) { // opens
 			if (caches[i].read || caches[i].written) {
 				try {
+					System.out.println("Opening account "+i);
 					if (caches[i].read) {
 						caches[i].account.open(false);
 					}
@@ -167,6 +168,7 @@ class Task implements Runnable {
 					for (int j = i - 1; j >= 0; j -= 1) { // once we hit a
 						if (caches[j].read || caches[j].written) {
 							caches[j].account.close();
+							System.out.println("Closing account "+j);
 						}
 					}
 					failure = true;
