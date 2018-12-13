@@ -185,7 +185,7 @@ class Task implements Runnable{
         		}
         		catch (TransactionAbortException e) { //something has been modified. We need to close all accounts and 
         			                                  //retry again.
-        			for (int j = i; j >= 0; j -= 1) {  //close all accounts we opened.
+        			for (int j = 0; j < caches.length; j += 1) {  //close all accounts we opened.
         				if (caches[j].read || caches[j].written)
         					caches[j].account.close(); 
         			}

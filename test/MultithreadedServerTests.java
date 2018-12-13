@@ -33,7 +33,7 @@ public class MultithreadedServerTests extends TestCase {
 	       System.out.print(")\n");
 	    }
 	 }    
-/*     
+     
         
      @Test
 	 public void testIncrement() throws IOException {
@@ -69,7 +69,6 @@ public class MultithreadedServerTests extends TestCase {
  		assertEquals("Account A differs",1,accounts[0].getValue());
  		     }
 
-*/
      
      @Test
      public void testChange() throws IOException {
@@ -92,7 +91,7 @@ public class MultithreadedServerTests extends TestCase {
  		
      }
   
- /*
+ 
      @Test
      public void testSubtract() throws IOException {    	 
     	// initialize accounts 
@@ -109,7 +108,7 @@ public class MultithreadedServerTests extends TestCase {
  		assertEquals("Account D differs",17,accounts[3].getValue());
  		
      }
-     */
+     
  /*  
      @Test
      public void testRotate() throws IOException {
