@@ -90,7 +90,7 @@ public class MultithreadedServerTests extends TestCase {
  		assertTrue(accounts[2].getValue() == 53 || accounts[2].getValue() == 50 || accounts[2].getValue() == 54);
  		
      }
-  
+*/  
  
      @Test
      public void testSubtract() throws IOException {    	 
@@ -109,7 +109,7 @@ public class MultithreadedServerTests extends TestCase {
  		
      }
      
- /*  
+   
      @Test
      public void testRotate() throws IOException {
     	// initialize accounts 
@@ -150,5 +150,5 @@ public class MultithreadedServerTests extends TestCase {
 
      }
 	 	  	 
-*/  
+  
 }

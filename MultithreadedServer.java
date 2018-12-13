@@ -155,21 +155,24 @@ class Task implements Runnable{
         			if (caches[i].read) { //This line is for andrew
         				System.out.println("Trying to open in read mode: "+ caches[i].accountNum);
         				caches[i].account.open(false);
+        				System.out.println("Sucessfully opened in read mode: "+ caches[i].accountNum);
         				
         			}
         			if (caches[i].written) {
         				System.out.println("Trying to open in write mode: "+ caches[i].accountNum);
         				caches[i].account.open(true); //opens for writing
-        				
+        				System.out.println("Sucessfully to opened in write mode: "+ caches[i].accountNum);
         			}
         		} catch (TransactionAbortException e) {
         			for (int j = i-1; j >= 0; j -= 1) {  //once we hit a already opened account, it closes all 
         											   //previously opened accounts
-        				if (caches[j].read || caches[j].written)
+        				if (caches[j].read || caches[j].written) {
         					caches[j].account.close(); 
+        					System.out.println("Closing: " + j);
+        				}
         			}      			
         			failure = true; //a flag for the for loop, so it wont keep opening after failure
-        			System.out.println("FAILURE IN OPENING");
+        			System.out.println("Failure in opening: "+i);
         			run(); //not sure if this is correct
         		}
         	}
@@ -233,7 +236,7 @@ public class MultithreadedServer {
         // following loop to feed tasks to the executor instead of running them
         // directly.  
         
-        ExecutorService executor = Executors.newFixedThreadPool(5); 
+        ExecutorService executor = Executors.newFixedThreadPool(1); 
         
         while ((line = input.readLine()) != null) {
             Task t = new Task(accounts, line);
