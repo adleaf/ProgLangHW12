@@ -34,7 +34,7 @@ public class MultithreadedServerTest extends TestCase {
 	    }
 	 }    
      
-/*        
+        
      @Test
 	 public void testIncrement() throws IOException {
 	
@@ -90,7 +90,7 @@ public class MultithreadedServerTest extends TestCase {
  		assertTrue(accounts[2].getValue() == 53 || accounts[2].getValue() == 50 || accounts[2].getValue() == 54);
  		
      } 
-*/ 
+
 
 
       @Test
@@ -109,7 +109,7 @@ public class MultithreadedServerTest extends TestCase {
  		assertEquals("Account D differs",17,accounts[3].getValue());
  		
      }
-     
+    
      @Test
      public void testTransaction() throws IOException {
     	 accounts = new Account[numLetters];
@@ -122,7 +122,7 @@ public class MultithreadedServerTest extends TestCase {
     	 assertEquals("Different Value", 18, accounts[1].getValue());
      }
      
-/*   
+   
      @Test
      public void testRotate() throws IOException {
     	// initialize accounts 
@@ -163,6 +163,6 @@ public class MultithreadedServerTest extends TestCase {
 
      }
 	 	  	 
-  */
+  
 
 }
