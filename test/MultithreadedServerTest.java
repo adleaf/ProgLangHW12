@@ -14,7 +14,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-public class MultithreadedServerTests extends TestCase {
+public class MultithreadedServerTest extends TestCase {
     private static final int A = constants.A;
     private static final int Z = constants.Z;
     private static final int numLetters = constants.numLetters;
@@ -90,7 +90,7 @@ public class MultithreadedServerTests extends TestCase {
  		assertTrue(accounts[2].getValue() == 53 || accounts[2].getValue() == 50 || accounts[2].getValue() == 54);
  		
      }
-*/  
+ 
  
      @Test
      public void testSubtract() throws IOException {    	 

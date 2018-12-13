@@ -236,7 +236,7 @@ public class MultithreadedServer {
         // following loop to feed tasks to the executor instead of running them
         // directly.  
         
-        ExecutorService executor = Executors.newFixedThreadPool(1); 
+        ExecutorService executor = Executors.newFixedThreadPool(3); 
         
         while ((line = input.readLine()) != null) {
             Task t = new Task(accounts, line);
