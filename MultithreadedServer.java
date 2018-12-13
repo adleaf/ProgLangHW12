@@ -77,11 +77,25 @@ class Task implements Runnable{
             throw new InvalidTransactionError();
         Account a = accounts[accountNum];
         for (int i = 1; i < name.length(); i++) {
+        	//System.out.println("HERE ");
             if (name.charAt(i) != '*')
                 throw new InvalidTransactionError();
-            accountNum = (accounts[accountNum].peek() % numLetters);
+            
+            int peekedVal = accounts[accountNum].peek();
+            accountNum = (peekedVal % numLetters);
+            
+            int val = accounts[accountNum].peek();
+            //System.out.println("HERE " + accountNum);
+            caches[accountNum].account = accounts[accountNum];
+            caches[accountNum].initialValue = val;
+            caches[accountNum].currentValue = val;
+            caches[accountNum].read = true; 
+            caches[accountNum].accountNum = accountNum; 
+            //System.out.println(caches[accountNum].read);
+           
             a = accounts[accountNum];
         }
+        
         caches[accountNum].account = a;
         caches[accountNum].initialValue = accounts[accountNum].peek();
         caches[accountNum].currentValue = caches[accountNum].initialValue;
@@ -134,13 +148,19 @@ class Task implements Runnable{
         
         boolean failure = false;
         for (int i = 0; i < caches.length && failure == false; i +=1) { //opens all accounts
+        	//System.out.print(i);
+        	//System.out.println(caches[i].read);
         	if (caches[i].read || caches[i].written) {
         		try {
         			if (caches[i].read) { //This line is for andrew
+        				System.out.println("Trying to open in read mode: "+ caches[i].accountNum);
         				caches[i].account.open(false);
+        				
         			}
         			if (caches[i].written) {
+        				System.out.println("Trying to open in write mode: "+ caches[i].accountNum);
         				caches[i].account.open(true); //opens for writing
+        				
         			}
         		} catch (TransactionAbortException e) {
         			for (int j = i; j >= 0; j -= 1) {  //once we hit a already opened account, it closes all 
@@ -156,15 +176,12 @@ class Task implements Runnable{
         }
         //We now have all accounts, we need to verify that each account holds the expected value. 
         for (int i = 0; i < caches.length && failure == false; i +=1) {
-        	if (caches[i].read || caches[i].written) {
+        	if (caches[i].read) {
         		try {
-        		
-        			int expected = caches[i].initialValue;
-        			
-        			//String overall= Integer.toString(expected)+ " vs " + Integer.toString(caches[i].account.peek());
-        			//System.out.println(overall);
-        			
+        			int expected = caches[i].initialValue; 
+        			System.out.println("Trying to read " + i);
         			caches[i].account.verify(expected);
+        			
         		}
         		catch (TransactionAbortException e) { //something has been modified. We need to close all accounts and 
         			                                  //retry again.
@@ -215,7 +232,7 @@ public class MultithreadedServer {
         // following loop to feed tasks to the executor instead of running them
         // directly.  
         
-        ExecutorService executor = Executors.newFixedThreadPool(7); 
+        ExecutorService executor = Executors.newFixedThreadPool(1); 
         
         while ((line = input.readLine()) != null) {
             Task t = new Task(accounts, line);
