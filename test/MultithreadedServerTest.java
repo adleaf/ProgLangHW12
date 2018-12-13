@@ -34,7 +34,7 @@ public class MultithreadedServerTest extends TestCase {
 	    }
 	 }    
      
-        
+     /*   
      @Test
 	 public void testIncrement() throws IOException {
 	
@@ -99,7 +99,7 @@ public class MultithreadedServerTest extends TestCase {
      } 
 
 
-
+      */
       @Test
      public void testSubtract() throws IOException {    	 
     	// initialize accounts 
@@ -117,7 +117,7 @@ public class MultithreadedServerTest extends TestCase {
  		
      }
     
-   
+   /*
      @Test
      public void testRotate() throws IOException {
     	// initialize accounts 
@@ -157,6 +157,7 @@ public class MultithreadedServerTest extends TestCase {
 
 
      }
+     */
 	 	  	 
   
 

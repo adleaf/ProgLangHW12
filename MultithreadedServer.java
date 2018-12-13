@@ -106,6 +106,7 @@ class Task implements Runnable {
 		// this could be resetting it
 		if(caches[accountNum].account == null) {
 			caches[accountNum].account = a;
+			System.out.println("Trying to Peek account:" + accountNum);
 			caches[accountNum].initialValue = accounts[accountNum].peek();
 			caches[accountNum].currentValue = caches[accountNum].initialValue;
 			caches[accountNum].notSet = true;
@@ -169,6 +170,7 @@ class Task implements Runnable {
 						}
 					}
 					failure = true;
+					System.out.println("rip opening");
 				}
 			}
 		}
@@ -184,6 +186,7 @@ class Task implements Runnable {
 							caches[j].account.close();
 					}
 					failure = true; // a flag for the for loop, so it wont keep
+					System.out.println("rip verify");
 				}
 			}
 		}
@@ -199,19 +202,21 @@ class Task implements Runnable {
 		for (int i = 0; i < caches.length && failure == false; i += 1) {
 			if (caches[i].read || caches[i].written) {
 				caches[i].account.close();
+				
 			}
 		}
 		if (failure == true) { // if failure is true, reset the cache
+			System.out.println("failed");
 			for (int i = 0; i < caches.length; i += 1) {
 				caches[i] = new Cache();
 			}
-			System.out.println("failed");
+			
 			run();
 		}
 
-		for (Cache c : caches)
-			System.out.println(c);
-
+//		for (Cache c : caches)
+//			System.out.println(c);
+//
 	
 	}
 }
