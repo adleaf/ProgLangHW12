@@ -152,7 +152,6 @@ class Task implements Runnable {
 			lhs.currentValue = rhs;
 			System.out.println("rhs: " + rhs + "->" + lhs);
 		}
-
 		boolean failure = false;
 		for (int i = 0; i < caches.length && failure == false; i += 1) { // opens
 			if (caches[i].read || caches[i].written) {
@@ -207,11 +206,13 @@ class Task implements Runnable {
 				caches[i] = new Cache();
 			}
 			System.out.println("failed");
-			run(); // rerun
+			run();
 		}
 
 		for (Cache c : caches)
 			System.out.println(c);
+
+	
 	}
 }
 
