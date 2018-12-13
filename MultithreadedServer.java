@@ -18,10 +18,6 @@ class Cache {
 	int accountNum;
 	boolean notSet;
 
-	public String toString() {
-		if(account==null) return "n/a";
-		return (char)(accountNum + 'A') + " i: " + initialValue + ", c: " + currentValue + " r:" + read + "/w:" + written;
-	}
 }
 
 // TO DO: Task is currently an ordinary class.
@@ -106,7 +102,6 @@ class Task implements Runnable {
 		// this could be resetting it
 		if(caches[accountNum].account == null) {
 			caches[accountNum].account = a;
-			System.out.println("Trying to Peek account:" + accountNum);
 			caches[accountNum].initialValue = accounts[accountNum].peek();
 			caches[accountNum].currentValue = caches[accountNum].initialValue;
 			caches[accountNum].notSet = true;
@@ -133,14 +128,18 @@ class Task implements Runnable {
 
 	public void run() {
 		// tokenize transaction
+		//splits the transactions
 		String[] commands = transaction.split(";");
 		for (int i = 0; i < commands.length; i++) {
+			//parses account
 			String[] words = commands[i].trim().split("\\s");
 			if (words.length < 3)
 				throw new InvalidTransactionError();
-			Cache lhs = parseAccount(words[0], 0);// parseAccount(words[0]);
+			//creates lefthand side cache
+			Cache lhs = parseAccount(words[0], 0);
 			if (!words[1].equals("="))
 				throw new InvalidTransactionError();
+			//calculates rhs
 			int rhs = parseAccountOrNum(words[2]);
 			for (int j = 3; j < words.length; j += 2) {
 				if (words[j].equals("+"))
@@ -150,40 +149,45 @@ class Task implements Runnable {
 				else
 					throw new InvalidTransactionError();
 			}
+			//sets the lhs cache current value 
 			lhs.currentValue = rhs;
 			System.out.println("rhs: " + rhs + "->" + lhs);
 		}
+		//flag to denote whether a failure occured
 		boolean failure = false;
-		for (int i = 0; i < caches.length && failure == false; i += 1) { // opens
+		// first for loop for opening 
+		for (int i = 0; i < caches.length && failure == false; i += 1) { 
+			//checks if cache needs to be opened
 			if (caches[i].read || caches[i].written) {
 				try {
-					System.out.println("Opening account "+i);
+					
 					if (caches[i].read) {
 						caches[i].account.open(false);
 					}
 					if (caches[i].written) {
 						caches[i].account.open(true);
 					}
-				} catch (TransactionAbortException e) {
-					for (int j = i - 1; j >= 0; j -= 1) { // once we hit a
+				} catch (TransactionAbortException e) { //a failure in opening has occurred. 
+					//free all accounts that we have previously opened.
+					for (int j = i - 1; j >= 0; j -= 1) { 
 						if (caches[j].read || caches[j].written) {
 							caches[j].account.close();
-							System.out.println("Closing account "+j);
 						}
 					}
+					//set failure flag to true
 					failure = true;
-					System.out.println("rip opening");
 				}
 			}
 		}
+		//verifies each cache that we need hasn't been changed.
 		for (int i = 0; i < caches.length && failure == false; i += 1) {
-			if (caches[i].read) {
+			if (caches[i].read) { //check the read caches haven't changed
 				try {
 					int expected = caches[i].initialValue;
 					caches[i].account.verify(expected);
 
-				} catch (TransactionAbortException e) { // something has been
-					for (int j = 0; j < caches.length; j += 1) { // close all
+				} catch (TransactionAbortException e) { // something has been changed 
+					for (int j = 0; j < caches.length; j += 1) { // close all caches that are open
 						if (caches[j].read || caches[j].written)
 							caches[j].account.close();
 					}
@@ -193,7 +197,7 @@ class Task implements Runnable {
 			}
 		}
 
-		// We now have verified all variables. Let us update all
+		// We now have verified all variables. Let us update all 
 		for (int i = 0; i < caches.length && failure == false; i += 1) {
 			if (caches[i].written) {
 				int finalValue = caches[i].currentValue;
@@ -208,18 +212,12 @@ class Task implements Runnable {
 			}
 		}
 		if (failure == true) { // if failure is true, reset the cache
-			System.out.println("failed");
 			for (int i = 0; i < caches.length; i += 1) {
 				caches[i] = new Cache();
 			}
-			
+			//rerun the task
 			run();
 		}
-
-//		for (Cache c : caches)
-//			System.out.println(c);
-//
-	
 	}
 }
 
